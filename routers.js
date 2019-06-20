@@ -26,8 +26,6 @@ Object.keys(controllers).forEach(con => {
     const result = path.match(reg)
     const method = result ? result[1].toLowerCase() : 'get'
     router[method](path.replace(reg, ''), controller[path])
-
-    // console.log(method, path.replace(reg, ''))
   })
   routers.push(router)
 })
