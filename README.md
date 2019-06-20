@@ -28,7 +28,7 @@
 
 - model.js
 
-> 数据模型代码，此处使用了 <a href="//docs.sequelizejs.com" target="_blank">Sequelize</a> 作为 ORM，代码中以 mysql 数据库为例
+> 数据模型代码，此处使用了 <a href="http://docs.sequelizejs.com" target="_blank">Sequelize</a> 作为 ORM，代码中以 mysql 数据库为例
 
 - utils
 
