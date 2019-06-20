@@ -25,10 +25,16 @@ app.use(views(__dirname + '/views', {
 
 // logger
 app.use(async (ctx, next) => {
-  const start = new Date()
   await next()
-  const ms = new Date() - start
-  console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
+  const {status} = ctx.response
+  switch (status) {
+    case 404:
+      return ctx.render('404', {
+        title: 'Page not found.',
+        message: 'Page not found.'
+      })
+    default:
+  }
 })
 
 // routes
