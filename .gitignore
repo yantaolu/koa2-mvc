@@ -15,3 +15,5 @@ yarn-error.log*
 
 # db-config
 /config/db-config.js
+
+package-lock.json
