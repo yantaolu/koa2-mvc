@@ -1,6 +1,16 @@
 const axios = require('axios')
 const qs = require('qs')
-const ResultError = require('../model/result-error')
+
+class ResultError extends Error {
+  constructor(msg, status, url) {
+    const message = `
+    status: ${status}
+    msg: ${msg}
+    url: ${url}`
+    super(message)
+    console.error(this)
+  }
+}
 
 const baseURL = '/'
 const instance = axios.create({
@@ -66,29 +76,38 @@ const fetch = (url = '/', data = {}, ops = {}) => {
         reject(response.statusText)
       }
     }).catch(e => {
+      const urls = url.replace(/^http(s)?:\/\//, '@@').split('/')
+      const len = urls.length
+      const secretUrl = urls.map((item, index) => {
+        if (item.startsWith('@@')) {
+          return item.replace(/^@@/, '//').replace(/[a-z-A-Z0-9\.]{4}$/, '****')
+        }
+        return index < len - 2 ? '****' : item.replace(/^.{2}/, '**').replace(/.{2}$/, '**')
+      }).join('/')
+
       let status = e && e.response && e.response.status
       let error
       switch (status) {
         case 400:
-          error = new ResultError('请求参数有误，无法被服务器理解', status)
+          error = new ResultError(`请求参数有误，无法被服务器理解`, status, secretUrl)
           break
         case 403:
-          error = new ResultError('无权限，服务器拒绝您的请求', status)
+          error = new ResultError(`无权限，服务器拒绝您的请求`, status, secretUrl)
           break
         case 404:
-          error = new ResultError('请求路径不存在', status)
+          error = new ResultError(`请求路径不存在`, status, secretUrl)
           break
         case 405:
-          error = new ResultError('请求方法错误', status)
+          error = new ResultError(`请求方法错误`, status, secretUrl)
           break
         case 500:
-          error = new ResultError('系统错误，请稍后重试', status)
+          error = new ResultError(`系统错误，请稍后重试`, status, secretUrl)
           break
         case 504:
-          error = new ResultError('请求超时', status)
+          error = new ResultError(`请求超时`, status, secretUrl)
           break
         default:
-          error = new ResultError(e.message, status)
+          error = new ResultError(`${e.message}`, status, secretUrl)
           break
       }
       reject(error || e)
